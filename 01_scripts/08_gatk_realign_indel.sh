@@ -1,6 +1,6 @@
 #!/bin/bash
-# 10 CPU
-# 100 Go
+# 1 CPU
+# 10 Go
 
 # Global variables
 GATK="/home/clrou103/00-soft/GATK/GenomeAnalysisTK.jar"
@@ -8,7 +8,8 @@ DEDUPFOLDER="07_deduplicated"
 REALIGNFOLDER="08_realigned"
 GENOMEFOLDER="03_genome"
 GENOME="genome.fasta"
-
+file=$1
+SEX=$2
 # Load needed modules
 module load java/jdk/1.8.0_102
 
@@ -20,18 +21,11 @@ LOG_FOLDER="99_log_files"
 cp "$SCRIPT" "$LOG_FOLDER"/"$TIMESTAMP"_"$NAME"
 
 # Realign around target previously identified
-#ls -1 "$DEDUPFOLDER"/*dedup.bam |
-#while read file
-#do
-#    java -jar $GATK \
-#        -T IndelRealigner \
-#        -R "$GENOMEFOLDER"/"$GENOME" \
-#        -I "$file" \
-#        -targetIntervals "${file%.dedup.bam}".intervals \
-#        --consensusDeterminationModel USE_READS  \
-#        -o "$REALIGNFOLDER"/$(basename "$file" .dedup.bam).realigned.bam
-#done
 
-# Realign around target previously identified in parallel
-ls -1 "$DEDUPFOLDER"/*dedup.bam |
-    parallel -j 10 java -jar $GATK -T IndelRealigner -R "$GENOMEFOLDER"/"$GENOME" -I {} -targetIntervals {}.intervals --consensusDeterminationModel USE_READS  -o "$REALIGNFOLDER"/{/}.realigned.bam
+java -jar $GATK \
+    -T IndelRealigner \
+    -R "$GENOMEFOLDER"/"$SEX"/"$GENOME" \
+    -I "$DEDUPFOLDER"/"$file" \
+    -targetIntervals "$DEDUPFOLDER"/"${file%.dedup.bam}".intervals \
+    --consensusDeterminationModel USE_READS  \
+    -o "$REALIGNFOLDER"/$(basename "$file" .dedup.bam).realigned.bam

@@ -1,6 +1,6 @@
 #!/bin/bash
-# 10 CPU
-# 300 Go
+# 1 CPU
+# 30 Go
 
 # Global variables
 GATK="/home/clrou103/00-soft/GATK/GenomeAnalysisTK.jar"
@@ -8,7 +8,8 @@ DEDUPFOLDER="07_deduplicated"
 REALIGNFOLDER="08_realigned"
 GENOMEFOLDER="03_genome"
 GENOME="genome.fasta"
-
+FILE=$1
+SEX=$2
 # Load needed modules
 module load java/jdk/1.8.0_102
 
@@ -20,16 +21,9 @@ LOG_FOLDER="99_log_files"
 cp "$SCRIPT" "$LOG_FOLDER"/"$TIMESTAMP"_"$NAME"
 
 # Build Bam Index
-#ls -1 "$DEDUPFOLDER"/*dedup.bam |
-#while read file
-#do
-#    java -jar "$GATK" \
-#        -T RealignerTargetCreator \
-#        -R "$GENOMEFOLDER"/"$GENOME" \
-#        -I "$file" \
-#        -o "${file%.dedup.bam}".intervals
-#done
 
-# Build Bam Index
-ls -1 "$DEDUPFOLDER"/*dedup.bam |
-    parallel -j 10 java -jar "$GATK" -T RealignerTargetCreator -R "$GENOMEFOLDER"/"$GENOME" -I {} -o {}.intervals
+java -jar "$GATK" \
+    -T RealignerTargetCreator \
+    -R "$GENOMEFOLDER"/"$SEX"/"$GENOME" \
+    -I "$DEDUPFOLDER"/"$FILE"_1.dedup.bam \
+    -o "${FILE%.dedup.bam}".intervals
