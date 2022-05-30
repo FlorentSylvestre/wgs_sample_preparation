@@ -1,6 +1,10 @@
 # WGS data preparation
 
 Pipeline to clean, align, and prepare sequence data for WGS analyses
+Adapted to handle 2 reference genome for male and female
+
+the two reference genome have to be placed in "M" and "F" subfolder of the 02_genome folder
+and be named "genome.fasta"
 
 ## WARNING
 
